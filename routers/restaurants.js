@@ -6,7 +6,7 @@ const RestaurantService = require('../services/restaurant-service/restaurant-ser
 // Get all restaurants
 RestaurantsRouter.get('/find/all', async (req, res) => {
     const data = await RestaurantService.getAllRestaurants();
-    console.log(data);
+    console.log(data[0]);
     res.status(200).send({ body: data });
 });
 

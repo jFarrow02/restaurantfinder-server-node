@@ -8,49 +8,21 @@ const COLLECTION_NAME = 'restaurants';
 
 const RestaurantService = {
 
-    // getAllRestaurants() {
-    //     const client = new MongoClient(DB_URI);
-    //     let foo = client.connect((err) => {
-    //         if(err) {
-    //             throw err;
-    //         }
-    //         const db = client.db(DB_NAME);
-    //         const collection = db.collection(COLLECTION_NAME);
-    //         return new Promise((resolve) => {
-    //             resolve(99);
-    //         });
-            // Fetch all restaurants
-            // collection.find({}).toArray()
-            //     .then(data => {
-            //         console.log('data:', data[0]);
-            //         restaurants = data;
-            //         client.close();
-            //         return 'foo';
-            //         // return new Promise((resolve) => {resolve(data)});
-            //     })
-            //     .catch(err => {
-            //         client.close();
-            //         throw err;
-            //     });
-            //     console.log('restaurants:', restaurants);
-        // });
-        
-        // return true;
-    // }
-
     getAllRestaurants() {
         const client = new MongoClient(DB_URI);
-        const foo = client.connect()
-            .then(res => {
-                // return new Promise((resolve) => {
-                //     resolve(res);
-                // })
-                return Promise.resolve('foo');
+        let result = client.connect()
+            .then(async () => {
+                const db = client.db(DB_NAME);
+                const collection = db.collection(COLLECTION_NAME);
+
+                // Fetch all restaurants
+                let restaurants = await collection.find({}).toArray();
+                return restaurants;
             })
             .catch(err => {
                 throw err;
             })
-        return foo;
+        return result;
     }
 };
 
