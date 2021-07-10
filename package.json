@@ -1,0 +1,18 @@
+{
+  "name": "restaurantfinder-server",
+  "version": "1.0.0",
+  "description": "server for restaurantfinder apps",
+  "main": "index.js",
+  "scripts": {
+    "serve": "node index.js",
+    "serve:dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "jFarrow02",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongodb": "^3.6.10",
+    "nodemon": "^2.0.12"
+  }
+}
