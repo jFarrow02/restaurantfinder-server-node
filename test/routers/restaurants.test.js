@@ -1,16 +1,13 @@
 const request = require('supertest');
 const express = require('express');
-const  { RestaurantsRouter } = require('../../src/routers/restaurants');
-const app = express();
-const proxyquire = require('proxyquire');
+const RestaurantsRouter = require('../../src/routers/restaurants');
 const sinon = require('sinon');
 const chai = require('chai');
 const assert = chai.assert;
 
-app.use(RestaurantsRouter);
-
 let RestaurantService;
 let getAllRestaurantsStub;
+let app;
 
 const fakeRestaurantResponse = [
     {
@@ -31,15 +28,20 @@ describe('RestaurantsRouter', () => {
     beforeEach(() => {
         getAllRestaurantsStub = sinon.stub();
 
-        RestaurantService = proxyquire('../../src/services/restaurant-service/restaurant-service.js', 
-            {
-                getAllRestaurants: getAllRestaurantsStub,
-            }
-        );
+        RestaurantService = {
+            getAllRestaurants: getAllRestaurantsStub,
+        };
+
+        app = express();
+        app.use(RestaurantsRouter(RestaurantService));
     });
 
+    afterEach(() => {
+        app = null;
+    })
+
     describe('GET /test', () => {
-        it('should return expected response', (done) => {
+        it('should return expected response when succeeds', (done) => {
             request(app)
                 .get('/test')
                 .set('Accept', 'application/json')
@@ -49,11 +51,11 @@ describe('RestaurantsRouter', () => {
     });
 
     describe('GET /find/all', () => {
-        it('should return expected response', (done) => {
+        it('should return expected response when succeeds', (done) => {
             // Arrange
             getAllRestaurantsStub.resolves(fakeRestaurantResponse);
             // Act
-            return request(app)
+            request(app)
                 .get('/find/all')
                 .set('Accept', 'application/json')
                 .expect('Content-Type', /json/)

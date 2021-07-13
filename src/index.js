@@ -1,6 +1,7 @@
 const express = require('express');
 const server = express();
-const { RestaurantsRouter } = require('./routers/restaurants');
+const RestaurantService = require('./services/restaurant-service/restaurant-service');
+const RestaurantsRouter = require('./routers/restaurants')(RestaurantService);
 
 
 server.use('/restaurants', RestaurantsRouter);
