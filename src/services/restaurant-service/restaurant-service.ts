@@ -20,14 +20,14 @@ const RestaurantService = {
                 client.close();
                 return restaurants;
             })
-            .catch(err => {
+            .catch((err: Error) => {
                 client.close();
                 throw err;
             });
         return result;
     },
 
-    getRestaurantsByBorough(boroughName) {
+    getRestaurantsByBorough(boroughName: string) {
         let result = client.connect()
             .then(async () => {
                 const db = client.db(DB_NAME);
@@ -38,14 +38,14 @@ const RestaurantService = {
                 client.close();
                 return restaurants;
             })
-            .catch(err => {
+            .catch((err: Error) => {
                 client.close();
                 throw err;
             });
             return result;
     },
 
-    getRestaurantByName(name) {
+    getRestaurantByName(name: string) {
         let result = client.connect()
             .then(async () => {
                 const db = client.db(DB_NAME);
@@ -56,14 +56,14 @@ const RestaurantService = {
                 client.close();
                 return restaurants;
             })
-            .catch(err => {
+            .catch((err:Error) => {
                 client.close();
                 throw err;
             });
             return result;
     },
 
-    getRestaurantByCusineType(cuisineType) {
+    getRestaurantByCusineType(cuisineType:string) {
         let result = client.connect()
             .then(async () => {
                 const db = client.db(DB_NAME);
@@ -74,7 +74,7 @@ const RestaurantService = {
                 client.close();
                 return restaurants;
             })
-            .catch(err => {
+            .catch((err:Error) => {
                 client.close();
                 throw err;
             });
