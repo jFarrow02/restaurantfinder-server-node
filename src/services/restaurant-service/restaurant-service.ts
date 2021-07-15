@@ -1,5 +1,7 @@
+export {}
 const { MongoClient } = require('mongodb');
 
+const RestaurantInterface = require('../../models/Restaurant');
 const DB_USER = process.env.RESTAURANTFINDER_DB_USER;
 const DB_PASSWORD = process.env.RESTAURANTFINDER_DB_PASSWORD;
 const DB_URI = `mongodb://${DB_USER}:${DB_PASSWORD}@localhost:27017`;
@@ -9,7 +11,7 @@ const client = new MongoClient(DB_URI);
 
 const RestaurantService = {
 
-    getAllRestaurants() {
+    getAllRestaurants(): Promise<[typeof RestaurantInterface]> {
         let result = client.connect()
             .then(async () => {
                 const db = client.db(DB_NAME);
@@ -27,7 +29,7 @@ const RestaurantService = {
         return result;
     },
 
-    getRestaurantsByBorough(boroughName: string) {
+    getRestaurantsByBorough(boroughName: string): Promise<[typeof RestaurantInterface]> {
         let result = client.connect()
             .then(async () => {
                 const db = client.db(DB_NAME);
@@ -45,14 +47,14 @@ const RestaurantService = {
             return result;
     },
 
-    getRestaurantByName(name: string) {
+    getRestaurantByName(name: string): Promise<typeof RestaurantInterface> {
         let result = client.connect()
             .then(async () => {
                 const db = client.db(DB_NAME);
                 const collection = db.collection(COLLECTION_NAME);
 
-                // Fetch all restaurants for borough name
-                let restaurants = await collection.find({ name: name}).toArray();
+                // Fetch restaurants by name
+                let restaurants = await collection.findOne({ name: name});
                 client.close();
                 return restaurants;
             })
@@ -63,7 +65,7 @@ const RestaurantService = {
             return result;
     },
 
-    getRestaurantByCusineType(cuisineType:string) {
+    getRestaurantByCusineType(cuisineType:string): Promise<[typeof RestaurantInterface]> {
         let result = client.connect()
             .then(async () => {
                 const db = client.db(DB_NAME);
