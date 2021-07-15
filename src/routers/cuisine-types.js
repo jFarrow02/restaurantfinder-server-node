@@ -8,6 +8,8 @@ const CuisineTypeRouter = (cuisineTypeService) => {
         const data = await cuisineTypeService.getAllCuisineTypes();
         res.status(200).json(data);
     });
+
+    return router;
 };
 
 module.exports = CuisineTypeRouter;

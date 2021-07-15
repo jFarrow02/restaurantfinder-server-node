@@ -1,7 +1,6 @@
-export {}
 const { MongoClient } = require('mongodb');
 
-const RestaurantInterface = require('../../models/Restaurant');
+// const RestaurantInterface = require('../../models/Restaurant');
 const DB_USER = process.env.RESTAURANTFINDER_DB_USER;
 const DB_PASSWORD = process.env.RESTAURANTFINDER_DB_PASSWORD;
 const DB_URI = `mongodb://${DB_USER}:${DB_PASSWORD}@localhost:27017`;
@@ -11,7 +10,7 @@ const client = new MongoClient(DB_URI);
 
 const RestaurantService = {
 
-    getAllRestaurants(): Promise<[typeof RestaurantInterface]> {
+    getAllRestaurants() {
         let result = client.connect()
             .then(async () => {
                 const db = client.db(DB_NAME);
@@ -22,14 +21,14 @@ const RestaurantService = {
                 client.close();
                 return restaurants;
             })
-            .catch((err: Error) => {
+            .catch((err) => {
                 client.close();
                 throw err;
             });
         return result;
     },
 
-    getRestaurantsByBorough(boroughName: string): Promise<[typeof RestaurantInterface]> {
+    getRestaurantsByBorough(boroughName){
         let result = client.connect()
             .then(async () => {
                 const db = client.db(DB_NAME);
@@ -40,14 +39,14 @@ const RestaurantService = {
                 client.close();
                 return restaurants;
             })
-            .catch((err: Error) => {
+            .catch((err) => {
                 client.close();
                 throw err;
             });
             return result;
     },
 
-    getRestaurantByName(name: string): Promise<typeof RestaurantInterface> {
+    getRestaurantByName(name) {
         let result = client.connect()
             .then(async () => {
                 const db = client.db(DB_NAME);
@@ -58,14 +57,14 @@ const RestaurantService = {
                 client.close();
                 return restaurants;
             })
-            .catch((err:Error) => {
+            .catch((err) => {
                 client.close();
                 throw err;
             });
             return result;
     },
 
-    getRestaurantByCusineType(cuisineType:string): Promise<[typeof RestaurantInterface]> {
+    getRestaurantByCusineType(cuisineType) {
         let result = client.connect()
             .then(async () => {
                 const db = client.db(DB_NAME);
@@ -76,7 +75,7 @@ const RestaurantService = {
                 client.close();
                 return restaurants;
             })
-            .catch((err:Error) => {
+            .catch((err) => {
                 client.close();
                 throw err;
             });
