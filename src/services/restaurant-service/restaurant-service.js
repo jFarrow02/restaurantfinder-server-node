@@ -17,7 +17,7 @@ const RestaurantService = {
                 const collection = db.collection(COLLECTION_NAME);
 
                 // Fetch all restaurants
-                let restaurants = await collection.find({}).toArray();
+                let restaurants = await collection.find({}).project({ _id: 0 }).toArray();
                 client.close();
                 return restaurants;
             })
@@ -36,7 +36,7 @@ const RestaurantService = {
                 const collection = db.collection(COLLECTION_NAME);
 
                 // Fetch all restaurants for borough name
-                let restaurants = await collection.find({ borough: boroughName}).toArray();
+                let restaurants = await collection.find({ borough: boroughName}).project({ _id: 0 }).toArray();
                 client.close();
                 return restaurants;
             })
@@ -55,7 +55,7 @@ const RestaurantService = {
                 const collection = db.collection(COLLECTION_NAME);
 
                 // Fetch restaurants by name
-                let restaurants = await collection.findOne({ name: name});
+                let restaurants = await collection.findOne({ name: name}, { _id: 0 });
                 client.close();
                 return restaurants;
             })
@@ -74,7 +74,7 @@ const RestaurantService = {
                 const collection = db.collection(COLLECTION_NAME);
 
                 // Fetch all restaurants for borough name
-                let restaurants = await collection.find({ cusine: cuisineType}).toArray();
+                let restaurants = await collection.find({ cusine: cuisineType}).project({ _id: 0 }).toArray();
                 client.close();
                 return restaurants;
             })
