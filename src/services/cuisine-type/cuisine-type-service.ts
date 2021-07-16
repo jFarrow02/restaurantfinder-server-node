@@ -1,15 +1,13 @@
-export {};
-
-const { MongoClient } = require('mongodb');
-const { CUISINE_CONFIG } = require('../config');
-const CUISINE_COLLECTION = 'cuisine-types';
+import { MongoClient } from 'mongodb';
+import CUISINE_CONFIG from '../config';
 
 const {CuisineType} = require('../../models/CuisineType');
+const CUISINE_COLLECTION = 'cuisine-types';
 
 const CuisineTypeService = {
 
     getAllCuisineTypes(): Promise<typeof CuisineType[]>{
-        const client = new MongoClient(CUISINE_CONFIG.DB_URI);
+        const client = new MongoClient(CUISINE_CONFIG.DB_URI, { useUnifiedTopology: true });
         let results = client.connect()
             .then(async () => {
                 const db = client.db(CUISINE_CONFIG.DB_NAME);

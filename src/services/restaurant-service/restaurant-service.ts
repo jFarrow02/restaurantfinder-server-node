@@ -1,13 +1,12 @@
-export {};
-const { MongoClient } = require('mongodb');
-const { RESTAURANT_CONFIG } = require('../config');
-const RestaurantInterface = require('../../models/Restaurant');
+import { MongoClient } from "mongodb";
+import RESTAURANT_CONFIG from '../config';
+import { RestaurantInterface } from "../../models/Restaurant";
 const COLLECTION_NAME = 'restaurants';
 
 const RestaurantService = {
 
-    getAllRestaurants():Promise<typeof RestaurantInterface[]> {
-        const client = new MongoClient(RESTAURANT_CONFIG.DB_URI);
+    getAllRestaurants():Promise<RestaurantInterface[]> {
+        const client = new MongoClient(RESTAURANT_CONFIG.DB_URI, { useUnifiedTopology: true });
         let result = client.connect()
             .then(async () => {
                 const db = client.db(RESTAURANT_CONFIG.DB_NAME);
@@ -26,7 +25,7 @@ const RestaurantService = {
     },
 
     getRestaurantsByBorough(boroughName: string){
-        const client = new MongoClient(RESTAURANT_CONFIG.DB_URI);
+        const client = new MongoClient(RESTAURANT_CONFIG.DB_URI, { useUnifiedTopology: true });
         let result = client.connect()
             .then(async () => {
                 const db = client.db(RESTAURANT_CONFIG.DB_NAME);
@@ -45,14 +44,14 @@ const RestaurantService = {
     },
 
     getRestaurantByName(name: string) {
-        const client = new MongoClient(RESTAURANT_CONFIG.DB_URI);
+        const client = new MongoClient(RESTAURANT_CONFIG.DB_URI, { useUnifiedTopology: true });
         let result = client.connect()
             .then(async () => {
                 const db = client.db(RESTAURANT_CONFIG.DB_NAME);
                 const collection = db.collection(COLLECTION_NAME);
 
                 // Fetch restaurants by name
-                let restaurants = await collection.findOne({ name: name}, { _id: 0 });
+                let restaurants = await collection.find({ name: name}).project({ _id: 0 });
                 client.close();
                 return restaurants;
             })
@@ -64,7 +63,7 @@ const RestaurantService = {
     },
 
     getRestaurantByCusineType(cuisineType: string) {
-        const client = new MongoClient(RESTAURANT_CONFIG.DB_URI);
+        const client = new MongoClient(RESTAURANT_CONFIG.DB_URI, { useUnifiedTopology: true });
         let result = client.connect()
             .then(async () => {
                 const db = client.db(RESTAURANT_CONFIG.DB_NAME);
@@ -83,4 +82,4 @@ const RestaurantService = {
     },
 };
 
-module.exports = RestaurantService;
+export default RestaurantService;
