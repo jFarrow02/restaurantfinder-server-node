@@ -1,19 +1,16 @@
+export {};
 const { MongoClient } = require('mongodb');
-
-// const RestaurantInterface = require('../../models/Restaurant');
-const DB_USER = process.env.RESTAURANTFINDER_DB_USER;
-const DB_PASSWORD = process.env.RESTAURANTFINDER_DB_PASSWORD;
-const DB_URI = `mongodb://${DB_USER}:${DB_PASSWORD}@localhost:27017`;
-const DB_NAME = process.env.RESTAURANTFINDER_DB_NAME;
+const { RESTAURANT_CONFIG } = require('../config');
+const RestaurantInterface = require('../../models/Restaurant');
 const COLLECTION_NAME = 'restaurants';
 
 const RestaurantService = {
 
-    getAllRestaurants() {
-        const client = new MongoClient(DB_URI);
+    getAllRestaurants():Promise<typeof RestaurantInterface[]> {
+        const client = new MongoClient(RESTAURANT_CONFIG.DB_URI);
         let result = client.connect()
             .then(async () => {
-                const db = client.db(DB_NAME);
+                const db = client.db(RESTAURANT_CONFIG.DB_NAME);
                 const collection = db.collection(COLLECTION_NAME);
 
                 // Fetch all restaurants
@@ -21,18 +18,18 @@ const RestaurantService = {
                 client.close();
                 return restaurants;
             })
-            .catch((err) => {
+            .catch((err: Error) => {
                 client.close();
                 throw err;
             });
         return result;
     },
 
-    getRestaurantsByBorough(boroughName){
-        const client = new MongoClient(DB_URI);
+    getRestaurantsByBorough(boroughName: string){
+        const client = new MongoClient(RESTAURANT_CONFIG.DB_URI);
         let result = client.connect()
             .then(async () => {
-                const db = client.db(DB_NAME);
+                const db = client.db(RESTAURANT_CONFIG.DB_NAME);
                 const collection = db.collection(COLLECTION_NAME);
 
                 // Fetch all restaurants for borough name
@@ -40,18 +37,18 @@ const RestaurantService = {
                 client.close();
                 return restaurants;
             })
-            .catch((err) => {
+            .catch((err: Error) => {
                 client.close();
                 throw err;
             });
             return result;
     },
 
-    getRestaurantByName(name) {
-        const client = new MongoClient(DB_URI);
+    getRestaurantByName(name: string) {
+        const client = new MongoClient(RESTAURANT_CONFIG.DB_URI);
         let result = client.connect()
             .then(async () => {
-                const db = client.db(DB_NAME);
+                const db = client.db(RESTAURANT_CONFIG.DB_NAME);
                 const collection = db.collection(COLLECTION_NAME);
 
                 // Fetch restaurants by name
@@ -59,18 +56,18 @@ const RestaurantService = {
                 client.close();
                 return restaurants;
             })
-            .catch((err) => {
+            .catch((err: Error) => {
                 client.close();
                 throw err;
             });
             return result;
     },
 
-    getRestaurantByCusineType(cuisineType) {
-        const client = new MongoClient(DB_URI);
+    getRestaurantByCusineType(cuisineType: string) {
+        const client = new MongoClient(RESTAURANT_CONFIG.DB_URI);
         let result = client.connect()
             .then(async () => {
-                const db = client.db(DB_NAME);
+                const db = client.db(RESTAURANT_CONFIG.DB_NAME);
                 const collection = db.collection(COLLECTION_NAME);
 
                 // Fetch all restaurants for borough name
@@ -78,7 +75,7 @@ const RestaurantService = {
                 client.close();
                 return restaurants;
             })
-            .catch((err) => {
+            .catch((err: Error) => {
                 client.close();
                 throw err;
             });
