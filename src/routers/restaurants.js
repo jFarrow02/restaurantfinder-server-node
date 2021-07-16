@@ -28,7 +28,7 @@ const RestaurantsRouter = (restaurantService) => {
 
     // Get one restaurant by name
     router.get('/find/name/:restaurant_name', async (req, res) => {
-        const data = await restaurantService.getRestaurantsByBorough(req.params.restaurant_name);
+        const data = await restaurantService.getRestaurantByName(req.params.restaurant_name);
         res.status(200).json(data);
     });
 

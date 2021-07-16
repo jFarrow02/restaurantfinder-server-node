@@ -37,7 +37,6 @@ const RestaurantService = {
 
                 // Fetch all restaurants for borough name
                 let restaurants = await collection.find({ borough: boroughName}).project({ _id: 0 }).toArray();
-                client.close();
                 return restaurants;
             })
             .catch((err) => {
@@ -55,9 +54,9 @@ const RestaurantService = {
                 const collection = db.collection(COLLECTION_NAME);
 
                 // Fetch restaurants by name
-                let restaurants = await collection.findOne({ name: name}, { _id: 0 });
+                let restaurant = await collection.findOne({ name: name}, { projection: { _id: 0 } });
                 client.close();
-                return restaurants;
+                return restaurant;
             })
             .catch((err) => {
                 client.close();
@@ -66,7 +65,7 @@ const RestaurantService = {
             return result;
     },
 
-    getRestaurantByCusineType(cuisineType) {
+    getRestaurantsByCuisineType(cuisineType) {
         const client = new MongoClient(DB_URI);
         let result = client.connect()
             .then(async () => {
@@ -74,8 +73,9 @@ const RestaurantService = {
                 const collection = db.collection(COLLECTION_NAME);
 
                 // Fetch all restaurants for borough name
-                let restaurants = await collection.find({ cusine: cuisineType}).project({ _id: 0 }).toArray();
+                let restaurants = await collection.find({ cuisine: cuisineType}).project({ _id: 0 }).toArray();
                 client.close();
+                console.log('restaurants:', restaurants);
                 return restaurants;
             })
             .catch((err) => {
