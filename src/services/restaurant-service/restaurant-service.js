@@ -1,5 +1,5 @@
 const { MongoClient } = require('mongodb');
-
+const { STATUS_CODES } = require('../../config/constants/http');
 // const RestaurantInterface = require('../../models/Restaurant');
 const DB_USER = process.env.RESTAURANTFINDER_DB_USER;
 const DB_PASSWORD = process.env.RESTAURANTFINDER_DB_PASSWORD;
@@ -7,10 +7,11 @@ const DB_URI = `mongodb://${DB_USER}:${DB_PASSWORD}@localhost:27017`;
 const DB_NAME = process.env.RESTAURANTFINDER_DB_NAME;
 const COLLECTION_NAME = 'restaurants';
 
+const { OK, SERVER_ERR } = STATUS_CODES;
 const RestaurantService = {
 
     getAllRestaurants() {
-        const client = new MongoClient(DB_URI);
+        const client = new MongoClient(DB_URI, { useUnifiedTopology: true });
         let result = client.connect()
             .then(async () => {
                 const db = client.db(DB_NAME);
@@ -19,17 +20,18 @@ const RestaurantService = {
                 // Fetch all restaurants
                 let restaurants = await collection.find({}).project({ _id: 0 }).toArray();
                 client.close();
-                return restaurants;
+                // return restaurants;
+                return { status: OK, data: restaurants };
             })
             .catch((err) => {
                 client.close();
-                throw err;
+                return { status: SERVER_ERR, err: err.message };
             });
         return result;
     },
 
     getRestaurantsByBorough(boroughName){
-        const client = new MongoClient(DB_URI);
+        const client = new MongoClient(DB_URI, { useUnifiedTopology: true });
         let result = client.connect()
             .then(async () => {
                 const db = client.db(DB_NAME);
@@ -47,7 +49,7 @@ const RestaurantService = {
     },
 
     getRestaurantByName(name) {
-        const client = new MongoClient(DB_URI);
+        const client = new MongoClient(DB_URI, { useUnifiedTopology: true });
         let result = client.connect()
             .then(async () => {
                 const db = client.db(DB_NAME);
@@ -56,7 +58,7 @@ const RestaurantService = {
                 // Fetch restaurants by name
                 let restaurant = await collection.findOne({ name: name}, { projection: { _id: 0 } });
                 client.close();
-                return restaurant;
+                return [ restaurant ];
             })
             .catch((err) => {
                 client.close();
@@ -66,7 +68,7 @@ const RestaurantService = {
     },
 
     getRestaurantsByCuisineType(cuisineType) {
-        const client = new MongoClient(DB_URI);
+        const client = new MongoClient(DB_URI, { useUnifiedTopology: true });
         let result = client.connect()
             .then(async () => {
                 const db = client.db(DB_NAME);
