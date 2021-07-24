@@ -21,9 +21,9 @@ const RestaurantsRouter = (restaurantService) => {
     // Get restuarants by borough
     router.get('/find/borough/:borough_name', async (req, res) => {
         const data = await restaurantService.getRestaurantsByBorough(req.params.borough_name);
-        const { status, data: restaurants} = data;
+        const { status } = data;
         if(status === OK) {
-            res.status(OK).json(restaurants);
+            res.status(OK).json(data);
         } else {
             res.status(SERVER_ERR).json({ status, err: ERR_MESSAGES[SERVER_ERR] });
         }
@@ -41,7 +41,8 @@ const RestaurantsRouter = (restaurantService) => {
     });
 
     // Get restaurants by avg. grade
-    router.get('/find/avg_grade/', (req, res) => {
+    router.get('/find/avg_grade/:avg_grade', async (req, res) => {
+        const data = await restaurantService.getRestaurantsByAverageGrade(req.params.avg_grade);
         const { status } = data;
         if(status === OK) {
             res.status(OK).json(data);
@@ -53,9 +54,9 @@ const RestaurantsRouter = (restaurantService) => {
     // Get one restaurant by name
     router.get('/find/name/:restaurant_name', async (req, res) => {
         const data = await restaurantService.getRestaurantByName(req.params.restaurant_name);
-        const { status, data: restaurants} = data;
+        const { status } = data;
         if(status === OK) {
-            res.status(OK).json(restaurants);
+            res.status(OK).json(data);
         } else {
             res.status(SERVER_ERR).json({ status, err: ERR_MESSAGES[SERVER_ERR] });
         }

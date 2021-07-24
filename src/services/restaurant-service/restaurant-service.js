@@ -14,13 +14,12 @@ const RestaurantService = {
         const client = new MongoClient(DB_URI, { useUnifiedTopology: true });
         let result = client.connect()
             .then(async () => {
-                const db = client.db(RESTAURANT_CONFIG.DB_NAME);
+                const db = client.db(DB_NAME);
                 const collection = db.collection(COLLECTION_NAME);
 
                 // Fetch all restaurants
-                let restaurants = await collection.find({}).project({ _id: 0 }).toArray();
+                let restaurants = await collection.find({}).project({ _id: 0 }).toArray().filter(restaurant => restaurant.name.length > 0);
                 client.close();
-                // return restaurants;
                 return { status: OK, data: restaurants };
             })
             .catch((err) => {
@@ -34,16 +33,17 @@ const RestaurantService = {
         const client = new MongoClient(DB_URI, { useUnifiedTopology: true });
         let result = client.connect()
             .then(async () => {
-                const db = client.db(RESTAURANT_CONFIG.DB_NAME);
+                const db = client.db(DB_NAME);
                 const collection = db.collection(COLLECTION_NAME);
 
                 // Fetch all restaurants for borough name
-                let restaurants = await collection.find({ borough: boroughName}).project({ _id: 0 }).toArray();
-                return restaurants;
+                let restaurants = await collection.find({ borough: boroughName}).project({ _id: 0 }).toArray().filter(restaurant => restaurant.name.length > 0);;
+                client.close();
+                return { status: OK, data: restaurants };
             })
             .catch((err) => {
                 client.close();
-                throw err;
+                return { status: SERVER_ERR, err: err.message };
             });
             return result;
     },
@@ -52,17 +52,17 @@ const RestaurantService = {
         const client = new MongoClient(DB_URI, { useUnifiedTopology: true });
         let result = client.connect()
             .then(async () => {
-                const db = client.db(RESTAURANT_CONFIG.DB_NAME);
+                const db = client.db(DB_NAME);
                 const collection = db.collection(COLLECTION_NAME);
 
                 // Fetch restaurants by name
                 let restaurant = await collection.findOne({ name: name}, { projection: { _id: 0 } });
                 client.close();
-                return [ restaurant ];
+                return { status: OK, data: [ restaurant ] };
             })
             .catch((err) => {
                 client.close();
-                throw err;
+                return { status: SERVER_ERR, err: err.message };
             });
             return result;
     },
@@ -71,21 +71,103 @@ const RestaurantService = {
         const client = new MongoClient(DB_URI, { useUnifiedTopology: true });
         let result = client.connect()
             .then(async () => {
-                const db = client.db(RESTAURANT_CONFIG.DB_NAME);
+                const db = client.db(DB_NAME);
                 const collection = db.collection(COLLECTION_NAME);
 
                 // Fetch all restaurants for borough name
-                let restaurants = await collection.find({ cuisine: cuisineType}).project({ _id: 0 }).toArray();
+                let restaurants = await collection.find({ cuisine: cuisineType}).project({ _id: 0 }).toArray().filter(restaurant => restaurant.name.length > 0);
                 client.close();
-                console.log('restaurants:', restaurants);
-                return restaurants;
+                return { status: OK, data: restaurants };
             })
             .catch((err) => {
                 client.close();
-                throw err;
+                return { status: SERVER_ERR, err: err.message };
             });
             return result;
     },
+
+    async getRestaurantsByAverageGrade(gradeParam) {
+        const client = new MongoClient(DB_URI, { useUnifiedTopology: true });
+        let restaurantsByGrade = [];
+        let avgLetterGrades = [];
+        let result = client.connect()
+            .then( async () => {
+                const db = client.db(DB_NAME);
+                const collection = db.collection(COLLECTION_NAME);
+                collection.find({}).toArray()
+                    .then((data) => {
+                        data.forEach((d) => {
+                            let totalPoints = 0;
+                            let count = 0;
+                            let grades = [ ...d.grades ];
+                            grades.forEach((grade) => {
+                                switch(grade.grade){
+                                    case 'A':
+                                        totalPoints+= 100;
+                                        count+= 1;
+                                        break;
+                                    case 'B':
+                                        totalPoints+= 90;
+                                        count+= 1;
+                                        break;
+                                    case 'C':
+                                        totalPoints+= 80;
+                                        count+= 1;
+                                        break;
+                                    case 'D':
+                                        totalPoints+= 70;
+                                        count+= 1;
+                                        break;
+                                    case 'Not Yet Graded':
+                                        break;
+                                    default:
+                                        totalPoints+= 60;
+                                        count+= 1;
+                                }
+                                
+                            });
+                            restaurantsByGrade.push({ ...d, avgGrade: totalPoints/count});
+                        });
+
+                        
+                        restaurantsByGrade.forEach((r) => {
+                            let avgLetterGrade;
+                            let avgGrade = r.avgGrade
+                            
+                            if(avgGrade >= 90) {
+                                avgLetterGrade = 'A'
+                            }
+                            else if(avgGrade >= 80) {
+                                avgLetterGrade = 'B'
+                            }
+                            else if(avgGrade >= 70) {
+                                avgLetterGrade = 'C'
+                            }
+                            else if(avgGrade >= 60) {
+                                avgLetterGrade = 'D'
+                            }
+                            else {
+                                avgLetterGrade = 'F'
+                            }
+                            r.avgGrade = avgLetterGrade;
+                            avgLetterGrades.push(r);
+                        });
+                        
+                        avgLetterGrades = avgLetterGrades.filter((restaurant) => restaurant.avgGrade === gradeParam);
+                        return avgLetterGrades;
+                    })
+                    .catch(err => {
+                        throw err;
+                    })
+                console.log('result:', result);
+            })
+            .catch((err) => {
+                // client.close();
+                return { status: SERVER_ERR, err: err.message };
+            });
+
+        return result;
+    }
 };
 
-export default RestaurantService;
+module.exports = RestaurantService;
