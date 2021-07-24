@@ -94,78 +94,71 @@ const RestaurantService = {
             .then( async () => {
                 const db = client.db(DB_NAME);
                 const collection = db.collection(COLLECTION_NAME);
-                collection.find({}).toArray()
-                    .then((data) => {
-                        data.forEach((d) => {
-                            let totalPoints = 0;
-                            let count = 0;
-                            let grades = [ ...d.grades ];
-                            grades.forEach((grade) => {
-                                switch(grade.grade){
-                                    case 'A':
-                                        totalPoints+= 100;
-                                        count+= 1;
-                                        break;
-                                    case 'B':
-                                        totalPoints+= 90;
-                                        count+= 1;
-                                        break;
-                                    case 'C':
-                                        totalPoints+= 80;
-                                        count+= 1;
-                                        break;
-                                    case 'D':
-                                        totalPoints+= 70;
-                                        count+= 1;
-                                        break;
-                                    case 'Not Yet Graded':
-                                        break;
-                                    default:
-                                        totalPoints+= 60;
-                                        count+= 1;
-                                }
-                                
-                            });
-                            restaurantsByGrade.push({ ...d, avgGrade: totalPoints/count});
-                        });
+                let restaurants = await collection.find({}).toArray();
 
-                        
-                        restaurantsByGrade.forEach((r) => {
-                            let avgLetterGrade;
-                            let avgGrade = r.avgGrade
-                            
-                            if(avgGrade >= 90) {
-                                avgLetterGrade = 'A'
-                            }
-                            else if(avgGrade >= 80) {
-                                avgLetterGrade = 'B'
-                            }
-                            else if(avgGrade >= 70) {
-                                avgLetterGrade = 'C'
-                            }
-                            else if(avgGrade >= 60) {
-                                avgLetterGrade = 'D'
-                            }
-                            else {
-                                avgLetterGrade = 'F'
-                            }
-                            r.avgGrade = avgLetterGrade;
-                            avgLetterGrades.push(r);
-                        });
-                        
-                        avgLetterGrades = avgLetterGrades.filter((restaurant) => restaurant.avgGrade === gradeParam);
-                        return avgLetterGrades;
-                    })
-                    .catch(err => {
-                        throw err;
-                    })
-                console.log('result:', result);
-            })
-            .catch((err) => {
-                // client.close();
+                restaurants.forEach((d) => {
+                    let totalPoints = 0;
+                    let count = 0;
+                    let grades = [ ...d.grades ];
+                    grades.forEach((grade) => {
+                        switch(grade.grade){
+                            case 'A':
+                                totalPoints+= 100;
+                                count+= 1;
+                                break;
+                            case 'B':
+                                totalPoints+= 90;
+                                count+= 1;
+                                break;
+                            case 'C':
+                                totalPoints+= 80;
+                                count+= 1;
+                                break;
+                            case 'D':
+                                totalPoints+= 70;
+                                count+= 1;
+                                break;
+                            case 'Not Yet Graded':
+                                break;
+                            default:
+                                totalPoints+= 60;
+                                count+= 1;
+                        }
+                    });
+                    restaurantsByGrade.push({ ...d, avgGrade: totalPoints/count});
+                });
+
+                restaurantsByGrade.forEach((r) => {
+                    let avgLetterGrade;
+                    let avgGrade = r.avgGrade
+                    
+                    if(avgGrade >= 90) {
+                        avgLetterGrade = 'A'
+                    }
+                    else if(avgGrade >= 80) {
+                        avgLetterGrade = 'B'
+                    }
+                    else if(avgGrade >= 70) {
+                        avgLetterGrade = 'C'
+                    }
+                    else if(avgGrade >= 60) {
+                        avgLetterGrade = 'D'
+                    }
+                    else {
+                        avgLetterGrade = 'F'
+                    }
+                    r.avgGrade = avgLetterGrade;
+                    avgLetterGrades.push(r);
+                });
+                
+                avgLetterGrades = avgLetterGrades.filter((restaurant) => restaurant.avgGrade === gradeParam);
+                client.close();
+                return { status: OK, data: avgLetterGrades};
+            }) // end .then()
+            .catch(err => {
+                client.close();
                 return { status: SERVER_ERR, err: err.message };
             });
-
         return result;
     }
 };
