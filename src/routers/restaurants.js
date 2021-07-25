@@ -43,7 +43,6 @@ const RestaurantsRouter = (restaurantService) => {
     // Get restaurants by avg. grade
     router.get('/find/avg_grade/:avg_grade', async (req, res) => {
         const data = await restaurantService.getRestaurantsByAverageGrade(req.params.avg_grade);
-        //res.status(400).json({ err: 'foo'});
         const { status } = data;
         if(status === OK) {
             res.status(OK).json(data);

@@ -22,7 +22,6 @@ const CuisineTypeService = {
                     
             })
             .catch((err) => {
-                console.log(err);
                 client.close();
                 return { status: SERVER_ERR, err: err.message };
             });
